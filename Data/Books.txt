@@ -1,0 +1,125 @@
+Fiction,The Great Gatsby,F. Scott Fitzgerald,PrintedBook,180
+Science,A Brief History of Time,Stephen Hawking,PrintedBook,256
+Non-Fiction,The Hobbit,J.R.R. Tolkien,PrintedBook,310
+Fiction,1984,George Orwell,PrintedBook,328
+Science,The Selfish Gene,Richard Dawkins,PrintedBook,352
+Mystery,The Hound of the Baskervilles,Arthur Conan Doyle,PrintedBook,256
+Fiction,To Kill a Mockingbird,Harper Lee,PrintedBook,336
+Biography,The Diary of a Young Girl,Anne Frank,PrintedBook,352
+Science,Cosmos,Carl Sagan,PrintedBook,384
+Fiction,The Catcher in the Rye,J.D. Salinger,PrintedBook,277
+Science,The Elegant Universe,Brian Greene,EBook,8.200000
+Fiction,Dune,Frank Herbert,EBook,5.800000
+Science,Quantum Physics 101,Albert Einstein,EBook,4.500000
+Fiction,The Martian,Andy Weir,EBook,3.900000
+Mystery,The Girl with the Dragon Tattoo,Stieg Larsson,EBook,6.100000
+Science,Hawking,Stephen Hawking,EBook,7.300000
+Fiction,The Name of the Wind,Patrick Rothfuss,EBook,9.400000
+Non-Fiction,Sapiens,Yuval Noah Harari,EBook,12.500000
+Fiction,The Handmaid's Tale,Margaret Atwood,PrintedBook,320
+Science,The Demon-Haunted World,Carl Sagan,PrintedBook,448
+Fiction,Matilda,Roald Dahl,PrintedBook,256
+Fiction,The Da Vinci Code,Dan Brown,PrintedBook,454
+Fiction,Angels & Demons,Dan Brown,PrintedBook,736
+Fiction,The Lost Symbol,Dan Brown,PrintedBook,509
+Fiction,Inferno,Dan Brown,PrintedBook,480
+Fiction,Origin,Dan Brown,PrintedBook,480
+Fiction,Digital Fortress,Dan Brown,PrintedBook,510
+Fiction,Deception Point,Dan Brown,PrintedBook,556
+Mystery,The Cuckoo's Calling,Robert Galbraith,PrintedBook,464
+Mystery,The Silkworm,Robert Galbraith,PrintedBook,464
+Mystery,Career of Evil,Robert Galbraith,PrintedBook,512
+Mystery,Lethal White,Robert Galbraith,PrintedBook,656
+Mystery,Troubled Blood,Robert Galbraith,PrintedBook,944
+Fiction,The Shining,Stephen King,PrintedBook,688
+Fiction,It,Stephen King,PrintedBook,1138
+Fiction,The Stand,Stephen King,PrintedBook,1152
+Fiction,Carrie,Stephen King,PrintedBook,304
+Fiction,The Dark Half,Stephen King,PrintedBook,480
+Fiction,The Institute,Stephen King,PrintedBook,576
+Fiction,The Outsider,Stephen King,PrintedBook,576
+Mystery,And Then There Were None,Agatha Christie,PrintedBook,272
+Mystery,Murder on the Orient Express,Agatha Christie,PrintedBook,256
+Mystery,The Murder of Roger Ackroyd,Agatha Christie,PrintedBook,288
+Mystery,Death on the Nile,Agatha Christie,PrintedBook,320
+Mystery,The ABC Murders,Agatha Christie,PrintedBook,256
+Mystery,The Mysterious Affair at Styles,Agatha Christie,PrintedBook,176
+Mystery,A Caribbean Mystery,Agatha Christie,PrintedBook,256
+Science,The Fabric of the Cosmos,Brian Greene,PrintedBook,592
+Science,The Hidden Reality,Brian Greene,PrintedBook,384
+Science,Until the End of Time,Brian Greene,PrintedBook,432
+Science,The Future of Humanity,Michio Kaku,PrintedBook,368
+Science,Physics of the Impossible,Michio Kaku,PrintedBook,368
+Science,The God Equation,Michio Kaku,PrintedBook,224
+Science,Parallel Worlds,Michio Kaku,PrintedBook,448
+Science,The Singularity Is Near,Ray Kurzweil,PrintedBook,672
+Science,The Age of Intelligent Machines,Ray Kurzweil,PrintedBook,580
+Biography,Steve Jobs,Walter Isaacson,PrintedBook,656
+Biography,Einstein,Walter Isaacson,PrintedBook,704
+Biography,Benjamin Franklin,Walter Isaacson,PrintedBook,608
+Biography,Leonardo da Vinci,Walter Isaacson,PrintedBook,624
+Biography,Elon Musk,Ashlee Vance,PrintedBook,416
+Biography,Becoming,Michelle Obama,PrintedBook,448
+Biography,A Promised Land,Barack Obama,PrintedBook,768
+Biography,Long Walk to Freedom,Nelson Mandela,PrintedBook,656
+Biography,The Story of My Life,Helen Keller,PrintedBook,240
+Biography,The Autobiography of Malcolm X,Malcolm X,PrintedBook,512
+Biography,Unbroken,Laura Hillenbrand,PrintedBook,528
+Biography,Into the Wild,Jon Krakauer,PrintedBook,224
+Non-Fiction,The Tipping Point,Malcolm Gladwell,PrintedBook,304
+Non-Fiction,Blink,Malcolm Gladwell,PrintedBook,320
+Non-Fiction,Outliers,Malcolm Gladwell,PrintedBook,336
+Non-Fiction,David and Goliath,Malcolm Gladwell,PrintedBook,320
+Non-Fiction,Talking to Strangers,Malcolm Gladwell,PrintedBook,400
+Non-Fiction,Freakonomics,Steven Levitt,PrintedBook,336
+Non-Fiction,SuperFreakonomics,Steven Levitt,PrintedBook,288
+Non-Fiction,Think Like a Freak,Steven Levitt,PrintedBook,288
+Non-Fiction,The Power of Habit,Charles Duhigg,PrintedBook,400
+Non-Fiction,Smarter Faster Better,Charles Duhigg,PrintedBook,400
+Non-Fiction,Guns Germs and Steel,Jared Diamond,PrintedBook,528
+Non-Fiction,Collapse,Jared Diamond,PrintedBook,608
+Non-Fiction,The World Until Yesterday,Jared Diamond,PrintedBook,512
+Fiction,The Road,Cormac McCarthy,PrintedBook,287
+Fiction,No Country for Old Men,Cormac McCarthy,PrintedBook,320
+Fiction,Blood Meridian,Cormac McCarthy,PrintedBook,351
+Fiction,All the Pretty Horses,Cormac McCarthy,PrintedBook,302
+Fiction,The Crossing,Cormac McCarthy,PrintedBook,448
+Fiction,The Goldfinch,Donna Tartt,PrintedBook,784
+Fiction,The Secret History,Donna Tartt,PrintedBook,576
+Fiction,The Little Friend,Donna Tartt,PrintedBook,624
+Fiction,American Psycho,Bret Easton Ellis,PrintedBook,416
+Fiction,Less Than Zero,Bret Easton Ellis,PrintedBook,208
+Fiction,The Rules of Attraction,Bret Easton Ellis,PrintedBook,288
+Fiction,The Devil Wears Prada,Lauren Weisberger,EBook,4.200000
+Fiction,The Nanny Diaries,Emma McLaughlin,EBook,3.800000
+Fiction,The Time Traveler's Wife,Audrey Niffenegger,EBook,5.100000
+Fiction,The Book Thief,Markus Zusak,EBook,6.300000
+Fiction,The Kite Runner,Khaled Hosseini,EBook,4.700000
+Fiction,A Thousand Splendid Suns,Khaled Hosseini,EBook,5.200000
+Fiction,And the Mountains Echoed,Khaled Hosseini,EBook,4.900000
+Fiction,The Alchemist,Paulo Coelho,EBook,2.800000
+Fiction,Eleven Minutes,Paulo Coelho,EBook,3.100000
+Fiction,The Pilgrimage,Paulo Coelho,EBook,2.900000
+Fiction,The Valkyries,Paulo Coelho,EBook,3.000000
+Science,A Short History of Nearly Everything,Bill Bryson,PrintedBook,624
+Science,The Body,Bill Bryson,PrintedBook,464
+Science,The Mother Tongue,Bill Bryson,PrintedBook,320
+Science,At Home,Bill Bryson,PrintedBook,592
+Science,The Sixth Extinction,Elizabeth Kolbert,PrintedBook,336
+Science,The Immortal Life of Henrietta Lacks,Rebecca Skloot,PrintedBook,400
+Science,The Emperor of All Maladies,Siddhartha Mukherjee,PrintedBook,592
+Science,The Gene,Siddhartha Mukherjee,PrintedBook,608
+Science,The Song of the Cell,Siddhartha Mukherjee,PrintedBook,496
+Science,The Man Who Mistook His Wife for a Hat,Oliver Sacks,PrintedBook,256
+Science,An Anthropologist on Mars,Oliver Sacks,PrintedBook,352
+Science,Hallucinations,Oliver Sacks,PrintedBook,336
+Science,Musicophilia,Oliver Sacks,PrintedBook,448
+Biography,Churchill,Roy Jenkins,PrintedBook,1008
+Biography,The Rise of Theodore Roosevelt,Edmund Morris,PrintedBook,960
+Biography,Theodore Rex,Edmund Morris,PrintedBook,772
+Biography,Colonel Roosevelt,Edmund Morris,PrintedBook,800
+Biography,Alexander Hamilton,Ron Chernow,PrintedBook,832
+Biography,Washington,Ron Chernow,PrintedBook,928
+Biography,Grant,Ron Chernow,PrintedBook,1104
+Biography,Titan,Chernow,PrintedBook,832
+Science,Introduction To Programming with Java,Daniel Y. Liang,PrintedBook,3233
