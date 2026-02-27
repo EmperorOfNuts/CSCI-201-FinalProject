@@ -20,6 +20,7 @@ public:
     virtual ~Book() = default;
 
     virtual void displayInfo() const;
+    virtual std::string getType() { return "Unknown"; }
 
     void setStatus(const BookStatus s) { status = s; };
     [[nodiscard]] BookStatus getStatus() const { return status; };
@@ -27,12 +28,12 @@ public:
     [[nodiscard]] std::string getAuthor() const { return author; }
     [[nodiscard]] Genre getGenre() const { return genre; }
 
+    bool operator==(const Book& other) const;
+    friend std::ostream& operator<<(std::ostream& os, const Book& b);
+
     static std::string genreToString(Genre g);
     static std::string bookStatusToString(BookStatus s);
     static Genre stringToGenre(const std::string& s);
-
-    bool operator==(const Book& other) const;
-    friend std::ostream& operator<<(std::ostream& os, const Book& b);
 };
 
 #endif

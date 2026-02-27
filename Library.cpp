@@ -9,11 +9,11 @@ Book* parseBookLine(const std::string& line) {
     std::stringstream ss(line);
     std::string genreStr, title, author, type, extraData;
 
-    std::getline(ss, genreStr, ',');
-    std::getline(ss, title, ',');
-    std::getline(ss, author, ',');
-    std::getline(ss, type, ',');
-    std::getline(ss, extraData, ',');
+    std::getline(ss, genreStr, '|');
+    std::getline(ss, title, '|');
+    std::getline(ss, author, '|');
+    std::getline(ss, type, '|');
+    std::getline(ss, extraData, '|');
 
     const Book::Genre genre = Book::stringToGenre(genreStr);
 
@@ -30,10 +30,10 @@ Book* parseBookLine(const std::string& line) {
 }
 
 std::string bookToString(const Book* book) {
-    std::string result = Book::genreToString(book->getGenre()) + "," + book->getTitle() + "," + book->getAuthor() + ",";
+    std::string result = Book::genreToString(book->getGenre()) + "|" + book->getTitle() + "|" + book->getAuthor() + "|";
 
-    if (auto* ebook = dynamic_cast<const EBook*>(book)) result += "EBook," + std::to_string(ebook->getFileSize());
-    else if (auto* printed = dynamic_cast<const PrintedBook*>(book)) result += "PrintedBook," + std::to_string(printed->getPageCount());
+    if (auto* ebook = dynamic_cast<const EBook*>(book)) result += "EBook|" + std::to_string(ebook->getFileSize());
+    else if (auto* printed = dynamic_cast<const PrintedBook*>(book)) result += "PrintedBook|" + std::to_string(printed->getPageCount());
 
     return result;
 }
@@ -42,25 +42,25 @@ Patron parsePatronLine(const std::string& line) {
     std::stringstream ss(line);
     std::string idStr, name;
 
-    std::getline(ss, idStr, ',');
-    std::getline(ss, name, ',');
+    std::getline(ss, idStr, '|');
+    std::getline(ss, name, '|');
 
     int id = std::stoi(idStr);
     return {name, id};
 }
 
 std::string patronToString(const Patron& patron) {
-    return std::to_string(patron.getId()) + "," + patron.getName();
+    return std::to_string(patron.getId()) + "|" + patron.getName();
 }
 
 Transaction parseTransactionLine(const std::string& line) {
     std::stringstream ss(line);
     std::string patronIdStr, bookTitle, transactionTypeStr, dateStr;
 
-    std::getline(ss, patronIdStr, ',');
-    std::getline(ss, bookTitle, ',');
-    std::getline(ss, transactionTypeStr, ',');
-    std::getline(ss, dateStr, ',');
+    std::getline(ss, patronIdStr, '|');
+    std::getline(ss, bookTitle, '|');
+    std::getline(ss, transactionTypeStr, '|');
+    std::getline(ss, dateStr, '|');
 
     int patronId = std::stoi(patronIdStr);
 
@@ -77,9 +77,9 @@ Transaction parseTransactionLine(const std::string& line) {
 }
 
 std::string transactionToString(const Transaction& transaction) {
-    return std::to_string(transaction.getPatronID()) + "," +
-           transaction.getBookTitle() + "," +
-           transaction.typeToString() + "," +
+    return std::to_string(transaction.getPatronID()) + "|" +
+           transaction.getBookTitle() + "|" +
+           transaction.typeToString() + "|" +
            transaction.getDate().toString();
 }
 

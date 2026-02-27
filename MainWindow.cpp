@@ -54,9 +54,9 @@ void MainWindow::setupUI() {
 
     // ===== Book Table =====
     bookTable = new QTableWidget(centralWidget);
-    bookTable->setColumnCount(4);
+    bookTable->setColumnCount(5);
     QStringList headers;
-    headers << "Title" << "Author" << "Genre" << "Status";
+    headers << "Title" << "Author" << "Genre" << "Type" << "Status";
     bookTable->setHorizontalHeaderLabels(headers);
 
     // Set alternating row colors to subtle grays
@@ -150,7 +150,7 @@ void MainWindow::setupUI() {
     setCentralWidget(centralWidget);
 
     // Window properties
-    resize(1000, 800);
+    resize(1200, 800);
     setWindowTitle("Library Management System");
 }
 
@@ -187,12 +187,13 @@ void MainWindow::setupMenuBar()
                 bookTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(book->getTitle())));
                 bookTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(book->getAuthor())));
                 bookTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(Book::genreToString(book->getGenre()))));
-                bookTable->setItem(row, 3, new QTableWidgetItem("Available"));
+                bookTable->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(book->getType())));
+                bookTable->setItem(row, 4, new QTableWidgetItem("Available"));
             }
         }
     });
 
-    auto* checkedOutAction = viewMenu->addAction("Checked Out Books Only");
+    const auto* checkedOutAction = viewMenu->addAction("Checked Out Books Only");
     connect(checkedOutAction, &QAction::triggered, this, [this]() {
         bookTable->setRowCount(0);
         for (const auto& books = library->getBooks(); const auto& book : books) {
@@ -202,7 +203,42 @@ void MainWindow::setupMenuBar()
                 bookTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(book->getTitle())));
                 bookTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(book->getAuthor())));
                 bookTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(Book::genreToString(book->getGenre()))));
-                bookTable->setItem(row, 3, new QTableWidgetItem("Checked Out"));
+                bookTable->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(book->getType())));
+                bookTable->setItem(row, 4, new QTableWidgetItem("Checked Out"));
+            }
+        }
+    });
+
+    const auto* printedBookAction = viewMenu->addAction("Printed Books Only");
+    connect(printedBookAction, &QAction::triggered, this, [this]() {
+        bookTable->setRowCount(0);
+        for (const auto& books = library->getBooks(); const auto& book : books) {
+            if (!book->getType().find("Printed Book")) {
+                const int row = bookTable->rowCount();
+                bookTable->insertRow(row);
+                bookTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(book->getTitle())));
+                bookTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(book->getAuthor())));
+                bookTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(Book::genreToString(book->getGenre()))));
+                bookTable->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(book->getType())));
+                QString status = (book->getStatus() == Book::BookStatus::Available) ? "Available" : "Checked Out";
+                bookTable->setItem(row, 4, new QTableWidgetItem(status));
+            }
+        }
+    });
+
+    const auto* EBookAction = viewMenu->addAction("E-Books Only");
+    connect(EBookAction, &QAction::triggered, this, [this]() {
+        bookTable->setRowCount(0);
+        for (const auto& books = library->getBooks(); const auto& book : books) {
+            if (!book->getType().find("E-Book")) {
+                const int row = bookTable->rowCount();
+                bookTable->insertRow(row);
+                bookTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(book->getTitle())));
+                bookTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(book->getAuthor())));
+                bookTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(Book::genreToString(book->getGenre()))));
+                bookTable->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(book->getType())));
+                QString status = (book->getStatus() == Book::BookStatus::Available) ? "Available" : "Checked Out";
+                bookTable->setItem(row, 4, new QTableWidgetItem(status));
             }
         }
     });
@@ -323,9 +359,10 @@ void MainWindow::refreshBookTable() const {
         bookTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(book->getTitle())));
         bookTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(book->getAuthor())));
         bookTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(Book::genreToString(book->getGenre()))));
+        bookTable->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(book->getType())));
 
         QString status = (book->getStatus() == Book::BookStatus::Available) ? "Available" : "Checked Out";
-        bookTable->setItem(row, 3, new QTableWidgetItem(status));
+        bookTable->setItem(row, 4, new QTableWidgetItem(status));
     }
 
     statusBar()->showMessage(QString("Displaying %1 books").arg(books.size()), 3000);
@@ -560,7 +597,7 @@ void MainWindow::onAddBookClicked()
     form.addRow("Genre:", &genreCombo);
 
     QComboBox typeCombo(&dialog);
-    typeCombo.addItems({"Printed Book", "EBook"});
+    typeCombo.addItems({"Printed Book", "E-Book"});
     form.addRow("Type:", &typeCombo);
 
     QStackedWidget extraStack(&dialog);
