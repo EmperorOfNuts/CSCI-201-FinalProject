@@ -3,7 +3,6 @@
 
 #include <string>
 #include <iomanip>
-#include <ctime>
 
 class Date {
 private:
@@ -15,8 +14,8 @@ public:
     Date();
     Date(int day, int month, int year);
 
-    [[nodiscard]] std::string toString() const;
     [[nodiscard]] Date addDays(int days) const;
+    [[nodiscard]] std::string toString() const;
 
     friend std::ostream& operator<<(std::ostream& os, const Date& d);
 };

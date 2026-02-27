@@ -6,7 +6,6 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
-#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <type_traits>
@@ -27,13 +26,9 @@ void saveToFile(const std::vector<T*>& items, const std::string& filename,
                 std::string (*itemToString)(const T*)) {
 
     std::ofstream file(filename);
-    if (!file.is_open()) {
-        throw std::runtime_error("Failed to open file for writing: " + filename);
-    }
+    if (!file.is_open()) throw std::runtime_error("Failed to open file for writing: " + filename);
 
-    for (const auto& item : items) {
-        file << itemToString(item) << std::endl;
-    }
+    for (const auto& item : items) file << itemToString(item) << std::endl;
 
     file.close();
     std::cout << "Saved " << items.size() << " items to " << filename << std::endl;
@@ -44,13 +39,9 @@ void saveToFile(const std::vector<T>& items, const std::string& filename,
                 std::string (*itemToString)(const T&)) {
 
     std::ofstream file(filename);
-    if (!file.is_open()) {
-        throw std::runtime_error("Failed to open file for writing: " + filename);
-    }
+    if (!file.is_open()) throw std::runtime_error("Failed to open file for writing: " + filename);
 
-    for (const auto& item : items) {
-        file << itemToString(item) << std::endl;
-    }
+    for (const auto& item : items) file << itemToString(item) << std::endl;
 
     file.close();
     std::cout << "Saved " << items.size() << " items to " << filename << std::endl;
@@ -61,9 +52,7 @@ void loadFromFile(std::vector<T*>& items, const std::string& filename,
                   T* (*parseLine)(const std::string&)) {
 
     std::ifstream file(filename);
-    if (!file.is_open()) {
-        throw std::runtime_error("Failed to open file: " + filename);
-    }
+    if (!file.is_open()) throw std::runtime_error("Failed to open file: " + filename);
 
     std::string line;
     int lineNum = 0;
@@ -126,9 +115,6 @@ private:
     std::vector<Patron> patrons;
     std::vector<Transaction> transactions;
 
-    Book* findBook(const std::string& title);
-    Patron* findPatron(int id);
-
 public:
     ~Library();
 
@@ -147,10 +133,13 @@ public:
     void addPatron(const Patron& p);
     void checkoutBook(int patronId, const std::string& title);
     void returnBook(int patronId, const std::string& title);
+    Book* findBook(const std::string& title);
+    Patron* findPatron(int id);
 
     // Getters for GUI
     [[nodiscard]] const std::vector<Book*>& getBooks() const { return books; }
     [[nodiscard]] const std::vector<Transaction>& getTransactions() const { return transactions; }
+    [[nodiscard]] const std::vector<Patron>& getPatrons() const { return patrons; }
 
     // Search methods for GUI
     [[nodiscard]] std::vector<Book*> searchBooksByAuthor(const std::string& author) const;

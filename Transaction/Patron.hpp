@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "../Book/Book.hpp"
+#include "Book/Book.hpp"
 
 class Patron {
 private:
@@ -14,7 +14,7 @@ private:
     static int nextId;
 
 public:
-    explicit Patron(std::string  name);
+    explicit Patron(std::string name);
     Patron(std::string name, int id);
 
     void borrowBook(Book* book);

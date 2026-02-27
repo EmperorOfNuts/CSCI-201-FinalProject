@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QComboBox>
+#include <QTextEdit>
 #include "Library.hpp"
 
 class MainWindow : public QMainWindow
@@ -15,19 +16,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(Library* lib, QWidget *parent = nullptr);
 
-private slots:
-    void refreshBookTable() const;
-    void onCheckoutClicked();
-    void onReturnClicked();
-
-    void onViewTransactionsClicked();
-    void onAddPatronClicked();
-    void onAddBookClicked();
-    void onSearchClicked();
-
 private:
     void setupUI();
     void setupMenuBar();
+    void displayPatronInfo(const Patron* patron);
 
     Library* library;
     QTableWidget* bookTable{};
@@ -37,6 +29,17 @@ private:
     QComboBox* searchTypeCombo{};
     QPushButton* checkoutButton{};
     QPushButton* returnButton{};
+    QLineEdit* patronLookupEdit{};
+
+private slots:
+    void refreshBookTable() const;
+    void onSearchClicked();
+    void onLookupPatronClicked();
+    void onCheckoutClicked();
+    void onReturnClicked();
+    void onViewTransactionsClicked();
+    void onAddPatronClicked();
+    void onAddBookClicked();
 };
 
 #endif

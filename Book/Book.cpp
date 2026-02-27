@@ -1,4 +1,3 @@
-// Book.cpp
 #include "Book.hpp"
 #include <iostream>
 #include <ostream>
@@ -12,16 +11,6 @@ void Book::displayInfo() const {
     std::cout <<"Unknown Type " << getTitle() << " - " << getAuthor() << ", "
               << genreToString(getGenre()) << " [" << bookStatusToString(getStatus())
               << "]" << std::endl;
-}
-
-bool Book::operator==(const Book& other) const {
-    return title == other.title && author == other.author;
-}
-
-std::ostream& operator<<(std::ostream& os, const Book& b) {
-    os << b.title << "," << b.author << "," << Book::genreToString(b.genre)
-       << "," << Book::bookStatusToString(b.status);
-    return os;
 }
 
 std::string Book::genreToString(const Genre g) {
@@ -50,4 +39,14 @@ Book::Genre Book::stringToGenre(const std::string& s) {
     if (s == "Science") return Genre::Science;
     if (s == "Biography") return Genre::Biography;
     throw std::invalid_argument("Invalid genre string: " + s);
+}
+
+bool Book::operator==(const Book& other) const {
+    return title == other.title && author == other.author;
+}
+
+std::ostream& operator<<(std::ostream& os, const Book& b) {
+    os << b.title << "," << b.author << "," << Book::genreToString(b.genre)
+       << "," << Book::bookStatusToString(b.status);
+    return os;
 }

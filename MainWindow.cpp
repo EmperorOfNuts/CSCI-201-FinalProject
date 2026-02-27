@@ -25,8 +25,7 @@ MainWindow::MainWindow(Library* lib, QWidget *parent)
     statusBar()->showMessage("Ready");
 }
 
-void MainWindow::setupUI()
-{
+void MainWindow::setupUI() {
     auto* centralWidget = new QWidget(this);
     auto* mainLayout = new QVBoxLayout(centralWidget);
 
@@ -51,8 +50,6 @@ void MainWindow::setupUI()
     searchLayout->addWidget(searchTypeCombo);
 
     mainLayout->addWidget(searchGroup);
-
-    // Connect search
     connect(searchButton, &QPushButton::clicked, this, &MainWindow::onSearchClicked);
 
     // ===== Book Table =====
@@ -76,7 +73,26 @@ void MainWindow::setupUI()
 
     mainLayout->addWidget(bookTable);
 
-    // ===== Input Section =====
+    // ===== Patron Lookup Section =====
+    auto* patronGroup = new QGroupBox("Patron Lookup", centralWidget);
+    auto* patronLayout = new QHBoxLayout(patronGroup);
+
+    auto* lookupLabel = new QLabel("Patron ID or Name:", patronGroup);
+    patronLayout->addWidget(lookupLabel);
+
+    patronLookupEdit = new QLineEdit(patronGroup);
+    patronLookupEdit->setPlaceholderText("Enter ID number or full name...");
+    patronLayout->addWidget(patronLookupEdit);
+
+    auto* lookupButton = new QPushButton("Lookup Patron", patronGroup);
+    patronLayout->addWidget(lookupButton);
+
+    mainLayout->addWidget(patronGroup);
+
+    connect(lookupButton, &QPushButton::clicked, this, &MainWindow::onLookupPatronClicked);
+    connect(patronLookupEdit, &QLineEdit::returnPressed, this, &MainWindow::onLookupPatronClicked);
+
+    // ===== Transactions Section =====
     // EVERY CHILD NEEDS A PARENT!!!
     auto* inputGroup = new QGroupBox("Transaction", centralWidget);
     auto* inputGroupLayout = new QVBoxLayout(inputGroup);
@@ -134,50 +150,8 @@ void MainWindow::setupUI()
     setCentralWidget(centralWidget);
 
     // Window properties
-    resize(900, 700);
+    resize(1000, 800);
     setWindowTitle("Library Management System");
-}
-
-
-void MainWindow::onSearchClicked()
-{
-    const QString term = searchEdit->text();
-    const QString type = searchTypeCombo->currentText();
-
-    if (term.isEmpty()) {
-        refreshBookTable();
-        return;
-    }
-
-    bookTable->setRowCount(0);
-
-    std::vector<Book*> results;
-    if (type == "Title") results = library->searchBooksByTitle(term.toStdString());
-    else if (type == "Author") results = library->searchBooksByAuthor(term.toStdString());
-    else if (type == "Genre") {
-        try {
-            Book::Genre genre = Book::stringToGenre(term.toStdString());
-            results = library->searchBooksByGenre(genre);
-        } catch (...) {
-            QMessageBox::warning(this, "Invalid Genre.",
-                "Please enter a valid genre (Fiction, NonFiction, Mystery, Science, Biography)");
-            refreshBookTable();
-            return;
-        }
-    }
-
-    for (const auto& book : results) {
-        const int row = bookTable->rowCount();
-        bookTable->insertRow(row);
-        bookTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(book->getTitle())));
-        bookTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(book->getAuthor())));
-        bookTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(Book::genreToString(book->getGenre()))));
-
-        QString status = (book->getStatus() == Book::BookStatus::Available) ? "Available" : "Checked Out";
-        bookTable->setItem(row, 3, new QTableWidgetItem(status));
-    }
-
-    statusBar()->showMessage(QString("Found %1 books.").arg(results.size()));
 }
 
 void MainWindow::setupMenuBar()
@@ -253,6 +227,91 @@ void MainWindow::setupMenuBar()
     });
 }
 
+void MainWindow::displayPatronInfo(const Patron* patron) {
+    QDialog dialog(this);
+    dialog.setWindowTitle("Patron Information");
+    dialog.resize(500, 500);
+
+    QVBoxLayout* layout = new QVBoxLayout(&dialog);
+    layout->setContentsMargins(20, 20, 20, 20);
+    layout->setSpacing(10);
+
+    // Header
+    const QString headerText = QString("Patron: %1 (ID: %2)")
+        .arg(QString::fromStdString(patron->getName()))
+        .arg(patron->getId());
+
+    QLabel* headerLabel = new QLabel(headerText, &dialog);
+    headerLabel->setStyleSheet("font-size: 16px; font-weight: bold;");
+    headerLabel->setAlignment(Qt::AlignLeft);
+    layout->addWidget(headerLabel);
+
+    const auto& borrowedBooks = patron->getBorrowedBooks();
+
+    QLabel* booksHeader = new QLabel(
+        QString("Currently Checked Out Books (%1):").arg(borrowedBooks.size()),
+        &dialog
+    );
+    booksHeader->setStyleSheet("font-size: 14px; font-weight: bold;");
+    booksHeader->setAlignment(Qt::AlignLeft);
+    layout->addWidget(booksHeader);
+
+    if (borrowedBooks.empty()) {
+        QLabel* noBooksLabel = new QLabel("No books currently checked out.", &dialog);
+        noBooksLabel->setStyleSheet("color: #888888; margin-left: 10px;");
+        layout->addWidget(noBooksLabel);
+    } else {
+        QTableWidget* booksTable = new QTableWidget(borrowedBooks.size(), 2, &dialog);
+        booksTable->setHorizontalHeaderLabels({"Title", "Author"});
+        booksTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+        booksTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+        booksTable->setAlternatingRowColors(true);
+        booksTable->verticalHeader()->setVisible(false);
+        booksTable->setShowGrid(false);
+
+        booksTable->setStyleSheet(
+            "QTableWidget {"
+            "    alternate-background-color: #303234;"
+            "    background-color: #18191a;"
+            "}"
+            "QTableWidget::item {"
+            "    padding: 1px;"
+            "}"
+        );
+
+        for (size_t i = 0; i < borrowedBooks.size(); ++i) {
+            booksTable->setItem(i, 0, new QTableWidgetItem(
+                QString::fromStdString(borrowedBooks[i]->getTitle())));
+            booksTable->setItem(i, 1, new QTableWidgetItem(
+                QString::fromStdString(borrowedBooks[i]->getAuthor())));
+        }
+
+        booksTable->resizeColumnsToContents();
+        booksTable->setFixedHeight(450);
+        layout->addWidget(booksTable);
+    }
+
+    layout->addStretch();
+
+    // Close button
+    QHBoxLayout* buttonLayout = new QHBoxLayout();
+    buttonLayout->setContentsMargins(0, 0, 0, 0);
+    buttonLayout->addStretch();
+
+    QPushButton* closeButton = new QPushButton("Close", &dialog);
+    closeButton->setFixedWidth(80);
+    closeButton->setFixedHeight(25);
+    connect(closeButton, &QPushButton::clicked, &dialog, &QDialog::accept);
+    buttonLayout->addWidget(closeButton);
+
+    layout->addLayout(buttonLayout);
+
+    // Autofill the transaction patron ID for convenience
+    patronIdEdit->setText(QString::number(patron->getId()));
+
+    dialog.exec();
+}
+
 void MainWindow::refreshBookTable() const {
     bookTable->setRowCount(0);
 
@@ -270,6 +329,91 @@ void MainWindow::refreshBookTable() const {
     }
 
     statusBar()->showMessage(QString("Displaying %1 books").arg(books.size()), 3000);
+}
+
+void MainWindow::onSearchClicked()
+{
+    const QString term = searchEdit->text();
+    const QString type = searchTypeCombo->currentText();
+
+    if (term.isEmpty()) {
+        refreshBookTable();
+        return;
+    }
+
+    bookTable->setRowCount(0);
+
+    std::vector<Book*> results;
+    if (type == "Title") results = library->searchBooksByTitle(term.toStdString());
+    else if (type == "Author") results = library->searchBooksByAuthor(term.toStdString());
+    else if (type == "Genre") {
+        try {
+            Book::Genre genre = Book::stringToGenre(term.toStdString());
+            results = library->searchBooksByGenre(genre);
+        } catch (...) {
+            QMessageBox::warning(this, "Invalid Genre.",
+            "Please enter a valid genre (Fiction, NonFiction, Mystery, Science, Biography)");
+            refreshBookTable();
+            return;
+        }
+    }
+
+    for (const auto& book : results) {
+        const int row = bookTable->rowCount();
+        bookTable->insertRow(row);
+        bookTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(book->getTitle())));
+        bookTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(book->getAuthor())));
+        bookTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(Book::genreToString(book->getGenre()))));
+
+        QString status = (book->getStatus() == Book::BookStatus::Available) ? "Available" : "Checked Out";
+        bookTable->setItem(row, 3, new QTableWidgetItem(status));
+    }
+
+    statusBar()->showMessage(QString("Found %1 books.").arg(results.size()));
+}
+
+void MainWindow::onLookupPatronClicked() {
+    const QString input = patronLookupEdit->text().trimmed();
+
+    if (input.isEmpty()) {
+        QMessageBox::warning(this, "Input Error", "Please enter a Patron ID or Name.");
+        return;
+    }
+
+    const Patron* foundPatron = nullptr;
+
+    // Try to parse as integer (ID lookup)
+    bool isId;
+    const int id = input.toInt(&isId);
+
+    if (isId) {
+        // Lookup by ID
+        foundPatron = library->findPatron(id);
+        if (!foundPatron) {
+            QMessageBox::information(this, "Not Found",
+                QString("No patron found with ID: %1").arg(id));
+            return;
+        }
+    } else {
+        // Lookup by name
+        const auto& patrons = library->getPatrons();
+        const QString searchName = input.toLower();
+
+        for (auto& patron : patrons) {
+            if (QString patronName = QString::fromStdString(patron.getName()).toLower(); patronName == searchName) {
+                foundPatron = const_cast<Patron*>(&patron);
+                break;
+            }
+        }
+
+        if (!foundPatron) {
+            QMessageBox::information(this, "Not Found",
+                QString("No patron found with name: %1").arg(input));
+            return;
+        }
+    }
+
+    displayPatronInfo(foundPatron);
 }
 
 void MainWindow::onCheckoutClicked()
@@ -397,7 +541,7 @@ void MainWindow::onAddPatronClicked()
     }
 }
 
-// Orphans consumed 20 GB of my RAM
+// Orphans here consumed 20 GB of my RAM
 void MainWindow::onAddBookClicked()
 {
     QDialog dialog(this);
@@ -487,3 +631,4 @@ void MainWindow::onAddBookClicked()
         }
     }
 }
+

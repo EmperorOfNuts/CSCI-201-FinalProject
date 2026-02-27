@@ -20,6 +20,14 @@ Transaction::Transaction(const int pid, std::string bookTitle, const Transaction
     , returnDate(std::nullopt)
 {}
 
+void Transaction::displayTransaction() const {
+    std::cout << "[" << date << "] Patron " << patronID << " "
+              << typeToString() << " \"" << bookTitle << "\"";
+
+    if (const auto retDate = getReturnDate(); retDate.has_value()) std::cout << " - Return by " << retDate.value();
+    std::cout << std::endl;
+}
+
 std::optional<Date> Transaction::getReturnDate() const {
     if (type == TransactionType::Checkout) {
         if (!returnDate.has_value()) returnDate = date.addDays(30);
@@ -30,14 +38,6 @@ std::optional<Date> Transaction::getReturnDate() const {
 
 std::string Transaction::typeToString() const {
     return type == TransactionType::Checkout ? "checked out" : "return";
-}
-
-void Transaction::displayTransaction() const {
-    std::cout << "[" << date << "] Patron " << patronID << " "
-              << typeToString() << " \"" << bookTitle << "\"";
-
-    if (const auto retDate = getReturnDate(); retDate.has_value()) std::cout << " - Return by " << retDate.value();
-    std::cout << std::endl;
 }
 
 // Annoying grammar lol

@@ -1,10 +1,9 @@
 #include "Library.hpp"
+#include <algorithm>
 #include <iostream>
 #include <filesystem>
 #include <ranges>
 #include <cctype>
-
-// ==================== Parser Functions ====================
 
 Book* parseBookLine(const std::string& line) {
     std::stringstream ss(line);
@@ -31,9 +30,7 @@ Book* parseBookLine(const std::string& line) {
 }
 
 std::string bookToString(const Book* book) {
-    std::string result = Book::genreToString(book->getGenre()) + "," +
-                         book->getTitle() + "," +
-                         book->getAuthor() + ",";
+    std::string result = Book::genreToString(book->getGenre()) + "," + book->getTitle() + "," + book->getAuthor() + ",";
 
     if (auto* ebook = dynamic_cast<const EBook*>(book)) result += "EBook," + std::to_string(ebook->getFileSize());
     else if (auto* printed = dynamic_cast<const PrintedBook*>(book)) result += "PrintedBook," + std::to_string(printed->getPageCount());
@@ -86,22 +83,8 @@ std::string transactionToString(const Transaction& transaction) {
            transaction.getDate().toString();
 }
 
-// ==================== Library Implementation ====================
-
 Library::~Library() {
     for (const auto book : books) delete book;
-}
-
-Book* Library::findBook(const std::string& title) {
-    const auto it = std::ranges::find_if(books,
-        [&title](const Book* b) { return b->getTitle() == title; });
-    return (it != books.end()) ? *it : nullptr;
-}
-
-Patron* Library::findPatron(int id) {
-    const auto it = std::ranges::find_if(patrons,
-        [id](const Patron& p) { return p.getId() == id; });
-    return (it != patrons.end()) ? &(*it) : nullptr;
 }
 
 void Library::loadBooks(const std::string& filename) {
@@ -189,7 +172,17 @@ void Library::returnBook(int patronId, const std::string& title) {
     transactions.emplace_back(patronId, title, TransactionType::Return);
 }
 
-// ==================== Search Methods ====================
+Book* Library::findBook(const std::string& title) {
+    const auto it = std::ranges::find_if(books,
+        [&title](const Book* b) { return b->getTitle() == title; });
+    return (it != books.end()) ? *it : nullptr;
+}
+
+Patron* Library::findPatron(int id) {
+    const auto it = std::ranges::find_if(patrons,
+        [id](const Patron& p) { return p.getId() == id; });
+    return (it != patrons.end()) ? &(*it) : nullptr;
+}
 
 std::vector<Book*> Library::searchBooksByAuthor(const std::string& author) const {
     std::vector<Book*> results;
