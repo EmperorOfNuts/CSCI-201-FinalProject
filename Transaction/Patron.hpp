@@ -20,6 +20,8 @@ public:
     void borrowBook(Book* book);
     void returnBook(Book* book);
     void displayPatron() const;
+    void clearBorrowedBooks() { borrowedBooks.clear(); }
+    void addBorrowedBook(Book* book) { borrowedBooks.push_back(book); }
 
     [[nodiscard]] std::string getName() const { return name; }
     [[nodiscard]] int getId() const { return id; }

@@ -17,6 +17,13 @@ public:
     [[nodiscard]] Date addDays(int days) const;
     [[nodiscard]] std::string toString() const;
 
+    bool operator==(const Date& other) const;
+    bool operator!=(const Date& other) const;
+    bool operator<(const Date& other) const;
+    bool operator>(const Date& other) const;
+    bool operator<=(const Date& other) const;
+    bool operator>=(const Date& other) const;
+
     friend std::ostream& operator<<(std::ostream& os, const Date& d);
 };
 

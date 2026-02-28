@@ -22,7 +22,7 @@ void Patron::borrowBook(Book* book) {
     if (it != borrowedBooks.end()) throw std::runtime_error("Patron already has this book borrowed.");
 
     borrowedBooks.push_back(book);
-    book->setStatus(Book::BookStatus::CheckedOut);
+    book->checkout(id);  // Use the new checkout method
 
     std::cout << "Book '" << book->getTitle() << "' borrowed successfully by " << name << "." << std::endl;
 }
@@ -34,7 +34,7 @@ void Patron::returnBook(Book* book) {
     if (it == borrowedBooks.end()) throw std::runtime_error("Patron did not borrow this book.");
 
     borrowedBooks.erase(it);
-    book->setStatus(Book::BookStatus::Available);
+    book->returnBook();  // Use the new return method
 
     std::cout << "Book '" << book->getTitle() << "' returned successfully by " << name << "." << std::endl;
 }
@@ -44,10 +44,16 @@ void Patron::displayPatron() const {
     std::cout << "ID: " << id << std::endl;
     std::cout << "Name: " << name << std::endl;
     std::cout << "Books Borrowed: " << borrowedBooks.size() << std::endl;
-    
+
     if (!borrowedBooks.empty()) {
         std::cout << "Borrowed Books List:" << std::endl;
-        for (size_t i = 0; i < borrowedBooks.size(); ++i) std::cout << "  " << (i + 1) << ". " << borrowedBooks[i]->getTitle() << " by " << borrowedBooks[i]->getAuthor() << std::endl;
+        for (size_t i = 0; i < borrowedBooks.size(); ++i) {
+            std::cout << "  " << (i + 1) << ". " << borrowedBooks[i]->getTitle() << " by " << borrowedBooks[i]->getAuthor();
+            if (borrowedBooks[i]->isOverdue()) {
+                std::cout << " - OVERDUE!";
+            }
+            std::cout << std::endl;
+        }
     }
 }
 

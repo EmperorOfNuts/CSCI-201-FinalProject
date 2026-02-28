@@ -3,6 +3,7 @@
 #include <ctime>
 #include <sstream>
 #include <stdexcept>
+#include <iomanip>
 
 Date::Date() {
     const time_t now = time(nullptr);
@@ -40,6 +41,23 @@ std::string Date::toString() const {
         << year;
     return oss.str();
 }
+
+// Can't believe I ACTUALLY had to overload this just for overdue dates
+bool Date::operator==(const Date& other) const { return day == other.day && month == other.month && year == other.year; }
+
+bool Date::operator!=(const Date& other) const { return !(*this == other); }
+
+bool Date::operator<(const Date& other) const {
+    if (year != other.year) return year < other.year;
+    if (month != other.month) return month < other.month;
+    return day < other.day;
+}
+
+bool Date::operator>(const Date& other) const { return other < *this; }
+
+bool Date::operator<=(const Date& other) const { return !(*this > other); }
+
+bool Date::operator>=(const Date& other) const { return !(*this < other); }
 
 std::ostream& operator<<(std::ostream& os, const Date& d) {
     os << d.toString();

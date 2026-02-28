@@ -7,33 +7,82 @@
 
 Book* parseBookLine(const std::string& line) {
     std::stringstream ss(line);
-    std::string genreStr, title, author, type, extraData;
+    std::string genreStr, title, author, type, extraData, statusStr, checkoutDateStr, dueDateStr, patronIdStr;
 
     std::getline(ss, genreStr, '|');
     std::getline(ss, title, '|');
     std::getline(ss, author, '|');
     std::getline(ss, type, '|');
     std::getline(ss, extraData, '|');
+    std::getline(ss, statusStr, '|');
+    std::getline(ss, checkoutDateStr, '|');
+    std::getline(ss, dueDateStr, '|');
+    std::getline(ss, patronIdStr, '|');
 
     const Book::Genre genre = Book::stringToGenre(genreStr);
+    Book* book = nullptr;
 
     if (type == "EBook") {
         const double fileSize = std::stod(extraData);
-        return new EBook(title, author, genre, fileSize);
-    }
-    if (type == "PrintedBook") {
+        book = new EBook(title, author, genre, fileSize);
+    } else if (type == "PrintedBook") {
         const int pages = std::stoi(extraData);
-        return new PrintedBook(title, author, genre, pages);
+        book = new PrintedBook(title, author, genre, pages);
+    } else {
+        book = new Book(title, author, genre);
     }
 
-    return new Book(title, author, genre);
+    // Restore checkout state if available
+    if (!statusStr.empty()) {
+        if (statusStr == "CheckedOut") {
+            book->setStatus(Book::BookStatus::CheckedOut);
+
+            if (!checkoutDateStr.empty() && checkoutDateStr != "null") {
+                int d, m, y;
+                char delim;
+                std::stringstream cdss(checkoutDateStr);
+                cdss >> d >> delim >> m >> delim >> y;
+                book->setCheckoutDate(Date(d, m, y));
+            }
+
+            if (!dueDateStr.empty() && dueDateStr != "null") {
+                int d, m, y;
+                char delim;
+                std::stringstream ddss(dueDateStr);
+                ddss >> d >> delim >> m >> delim >> y;
+                book->setDueDate(Date(d, m, y));
+            }
+
+            if (!patronIdStr.empty() && patronIdStr != "null") book->setCurrentPatronId(std::stoi(patronIdStr));
+
+        } else {
+            book->setStatus(Book::BookStatus::Available);
+        }
+    }
+
+    return book;
 }
 
 std::string bookToString(const Book* book) {
     std::string result = Book::genreToString(book->getGenre()) + "|" + book->getTitle() + "|" + book->getAuthor() + "|";
 
-    if (auto* ebook = dynamic_cast<const EBook*>(book)) result += "EBook|" + std::to_string(ebook->getFileSize());
-    else if (auto* printed = dynamic_cast<const PrintedBook*>(book)) result += "PrintedBook|" + std::to_string(printed->getPageCount());
+    if (auto* ebook = dynamic_cast<const EBook*>(book)) result += "EBook|" + std::to_string(ebook->getFileSize()) + "|";
+    else if (auto* printed = dynamic_cast<const PrintedBook*>(book)) result += "PrintedBook|" + std::to_string(printed->getPageCount()) + "|";
+    else result += "Unknown|0|";
+
+    result += (book->getStatus() == Book::BookStatus::Available ? "Available|" : "CheckedOut|");
+
+    // Checkout date
+    if (book->getCheckoutDate().has_value()) result += book->getCheckoutDate()->toString() + "|";
+    else result += "null|";
+
+    // Due date
+    if (book->getDueDate().has_value()) result += book->getDueDate()->toString() + "|";
+    else result += "null|";
+
+    // Current patron ID
+    if (book->getCurrentPatronId().has_value()) result += std::to_string(book->getCurrentPatronId().value());
+    else result += "null";
 
     return result;
 }
@@ -88,12 +137,15 @@ Library::~Library() {
 }
 
 void Library::loadBooks(const std::string& filename) {
-    // Delete loaded book if refreshing
+    // Delete loaded books if refreshing
     for (const auto* book : books) delete book;
     books.clear();
 
     // Load new books
     loadFromFile(books, filename, parseBookLine);
+
+    // Rebuild patron-book associations
+    rebuildPatronBorrowedBooks();
 }
 
 void Library::loadPatrons(const std::string& filename) {
@@ -118,9 +170,10 @@ void Library::saveTransactions(const std::string& filename) const {
 
 void Library::loadData() {
     try {
-        loadBooks();
         loadPatrons();
+        loadBooks();
         loadTransactions();
+
         std::cout << "\nAll data loaded successfully!" << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Error loading data: " << e.what() << std::endl;
@@ -135,6 +188,18 @@ void Library::saveData() const {
         std::cout << "\nAll data saved successfully!" << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Error saving data: " << e.what() << std::endl;
+    }
+}
+
+void Library::rebuildPatronBorrowedBooks() {
+    for (auto& patron : patrons) patron.clearBorrowedBooks();
+
+    for (auto* book : books) {
+        if (book->getStatus() == Book::BookStatus::CheckedOut) {
+            if (auto patronId = book->getCurrentPatronId()) {
+                if (Patron* patron = findPatron(*patronId)) patron->addBorrowedBook(book);
+            }
+        }
     }
 }
 
@@ -159,6 +224,8 @@ void Library::checkoutBook(int patronId, const std::string& title) {
 
     patron->borrowBook(book);
     transactions.emplace_back(patronId, title, TransactionType::Checkout);
+
+    saveData();
 }
 
 void Library::returnBook(int patronId, const std::string& title) {
@@ -168,8 +235,10 @@ void Library::returnBook(int patronId, const std::string& title) {
     Book* book = findBook(title);
     if (!book) throw std::runtime_error("Book '" + title + "' not found.");
 
-    patron->returnBook(book);
+    patron->returnBook(book);  // This calls book->returnBook() and removes from patron's vector
     transactions.emplace_back(patronId, title, TransactionType::Return);
+
+    saveData();
 }
 
 Book* Library::findBook(const std::string& title) {

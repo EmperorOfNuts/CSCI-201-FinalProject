@@ -32,7 +32,7 @@ private:
     QLineEdit* patronLookupEdit{};
 
 private slots:
-    void refreshBookTable() const;
+    void refreshBookTable();
     void onSearchClicked();
     void onLookupPatronClicked();
     void onCheckoutClicked();

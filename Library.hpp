@@ -128,6 +128,9 @@ public:
     void loadData();
     void saveData() const;
 
+    // Helper Methods
+    void rebuildPatronBorrowedBooks();
+
     // Core operations
     void addBook(Book* b);
     void addPatron(const Patron& p);

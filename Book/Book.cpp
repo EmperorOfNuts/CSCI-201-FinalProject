@@ -5,12 +5,46 @@
 #include <utility>
 
 Book::Book(std::string title, std::string author, const Genre genre)
-    : title(std::move(title)), author(std::move(author)), genre(genre), status(BookStatus::Available) {}
+    : title(std::move(title))
+    , author(std::move(author))
+    , genre(genre)
+    , status(BookStatus::Available)
+    , checkoutDate(std::nullopt)
+    , dueDate(std::nullopt)
+    , currentPatronId(std::nullopt) {}
+
+void Book::checkout(const int patronId) {
+    status = BookStatus::CheckedOut;
+    currentPatronId = patronId;
+    checkoutDate = Date();
+    dueDate = checkoutDate->addDays(30);
+}
+
+void Book::returnBook() {
+    status = BookStatus::Available;
+    currentPatronId = std::nullopt;
+}
+
+bool Book::isOverdue() const {
+    if (status != BookStatus::CheckedOut) return false;
+    if (!dueDate.has_value()) return false;
+    const Date today;
+    return today > dueDate.value();
+}
+
+int Book::getDaysOverdue() const {
+    if (!isOverdue()) return 0;
+    const Date today;
+    return 1;
+}
 
 void Book::displayInfo() const {
-    std::cout <<"Unknown Type " << getTitle() << " - " << getAuthor() << ", "
-              << genreToString(getGenre()) << " [" << bookStatusToString(getStatus())
-              << "]" << std::endl;
+    std::cout << "Unknown Type " << getTitle() << " - " << getAuthor() << ", "
+              << genreToString(getGenre()) << " [" << bookStatusToString(getStatus());
+    if (isOverdue()) {
+        std::cout << " - OVERDUE!";
+    }
+    std::cout << "]" << std::endl;
 }
 
 std::string Book::genreToString(const Genre g) {

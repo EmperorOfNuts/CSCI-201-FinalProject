@@ -59,6 +59,9 @@ void MainWindow::setupUI() {
     headers << "Title" << "Author" << "Genre" << "Type" << "Status";
     bookTable->setHorizontalHeaderLabels(headers);
 
+    bookTable->setSortingEnabled(true);
+    bookTable->horizontalHeader()->setSectionsClickable(true);
+
     // Set alternating row colors to subtle grays
     // Screw CSS styling again BTW I hate this
     bookTable->setAlternatingRowColors(true);
@@ -299,6 +302,10 @@ void MainWindow::displayPatronInfo(const Patron* patron) {
     } else {
         QTableWidget* booksTable = new QTableWidget(borrowedBooks.size(), 2, &dialog);
         booksTable->setHorizontalHeaderLabels({"Title", "Author"});
+
+        booksTable->setSortingEnabled(true);
+        booksTable->horizontalHeader()->setSectionsClickable(true);
+
         booksTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
         booksTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
         booksTable->setAlternatingRowColors(true);
@@ -348,7 +355,7 @@ void MainWindow::displayPatronInfo(const Patron* patron) {
     dialog.exec();
 }
 
-void MainWindow::refreshBookTable() const {
+void MainWindow::refreshBookTable() {
     bookTable->setRowCount(0);
 
     const auto& books = library->getBooks();
@@ -361,15 +368,20 @@ void MainWindow::refreshBookTable() const {
         bookTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(Book::genreToString(book->getGenre()))));
         bookTable->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(book->getType())));
 
-        QString status = (book->getStatus() == Book::BookStatus::Available) ? "Available" : "Checked Out";
+        QString status;
+        if (book->getStatus() == Book::BookStatus::Available) status = "Available";
+        else {
+            status = "Checked Out";
+            if (book->isOverdue()) status += " - OVERDUE!";
+        }
+
         bookTable->setItem(row, 4, new QTableWidgetItem(status));
     }
 
     statusBar()->showMessage(QString("Displaying %1 books").arg(books.size()), 3000);
 }
 
-void MainWindow::onSearchClicked()
-{
+void MainWindow::onSearchClicked() {
     const QString term = searchEdit->text();
     const QString type = searchTypeCombo->currentText();
 
@@ -398,12 +410,20 @@ void MainWindow::onSearchClicked()
     for (const auto& book : results) {
         const int row = bookTable->rowCount();
         bookTable->insertRow(row);
+
         bookTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(book->getTitle())));
         bookTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(book->getAuthor())));
         bookTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(Book::genreToString(book->getGenre()))));
+        bookTable->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(book->getType())));
 
-        QString status = (book->getStatus() == Book::BookStatus::Available) ? "Available" : "Checked Out";
-        bookTable->setItem(row, 3, new QTableWidgetItem(status));
+        QString status;
+        if (book->getStatus() == Book::BookStatus::Available) status = "Available";
+        else {
+            status = "Checked Out";
+            if (book->isOverdue()) status += " - OVERDUE!";
+        }
+
+        bookTable->setItem(row, 4, new QTableWidgetItem(status));
     }
 
     statusBar()->showMessage(QString("Found %1 books.").arg(results.size()));
@@ -419,7 +439,6 @@ void MainWindow::onLookupPatronClicked() {
 
     const Patron* foundPatron = nullptr;
 
-    // Try to parse as integer (ID lookup)
     bool isId;
     const int id = input.toInt(&isId);
 
@@ -453,8 +472,7 @@ void MainWindow::onLookupPatronClicked() {
     displayPatronInfo(foundPatron);
 }
 
-void MainWindow::onCheckoutClicked()
-{
+void MainWindow::onCheckoutClicked() {
     const QString patronIdText = patronIdEdit->text();
     const QString bookTitle = bookTitleEdit->text();
 
@@ -507,8 +525,7 @@ void MainWindow::onReturnClicked()
     }
 }
 
-void MainWindow::onViewTransactionsClicked()
-{
+void MainWindow::onViewTransactionsClicked() {
     const auto& transactions = library->getTransactions();
 
     if (transactions.empty()) {
@@ -518,7 +535,7 @@ void MainWindow::onViewTransactionsClicked()
 
     QDialog dialog(this);
     dialog.setWindowTitle("Transaction History");
-    dialog.resize(600, 500);
+    dialog.resize(1000, 500);
 
     QVBoxLayout* layout = new QVBoxLayout(&dialog);
 
@@ -528,8 +545,16 @@ void MainWindow::onViewTransactionsClicked()
 
     QTableWidget* table = new QTableWidget(&dialog);
     table->setColumnCount(5);
-    table->setHorizontalHeaderLabels({"Date", "Patron ID", "Type", "Book Title", "Return By"});
-    table->horizontalHeader()->setStretchLastSection(true);
+    table->setHorizontalHeaderLabels({"Date", "Patron ID", "Type", "Book Title", "Status"});
+
+    table->setSortingEnabled(true);
+    table->horizontalHeader()->setSectionsClickable(true);
+
+    for (int i = 0; i < 4; ++i) table->horizontalHeader()->setSectionResizeMode(i, QHeaderView::Stretch);
+    // Last column fixed at 300px to display book status fully
+    table->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Fixed);
+    table->setColumnWidth(4, 300);
+
     table->setAlternatingRowColors(true);
     table->setRowCount(transactions.size());
     table->setStyleSheet(
@@ -546,14 +571,22 @@ void MainWindow::onViewTransactionsClicked()
         table->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(t.typeToString())));
         table->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(t.getBookTitle())));
 
-        QString returnInfo;
-        if (auto retDate = t.getReturnDate(); retDate.has_value()) returnInfo = QString::fromStdString(retDate->toString());
-        table->setItem(row, 4, new QTableWidgetItem(returnInfo));
-
+        // Show current status for checkouts
+        if (t.getType() == TransactionType::Checkout) {
+            if (const Book* book = library->findBook(t.getBookTitle()); book && book->getStatus() == Book::BookStatus::CheckedOut && book->getCurrentPatronId() == t.getPatronID()) {
+                QString statusText = "Active";
+                if (book->isOverdue()) statusText += " - OVERDUE!";
+                if (book->getDueDate().has_value()) statusText += " (Due: " + QString::fromStdString(book->getDueDate()->toString()) + ")";
+                table->setItem(row, 4, new QTableWidgetItem(statusText));
+            } else {
+                table->setItem(row, 4, new QTableWidgetItem("Returned"));
+            }
+        } else {
+            table->setItem(row, 4, new QTableWidgetItem("Completed"));
+        }
         row++;
     }
 
-    table->resizeColumnsToContents();
     layout->addWidget(table);
 
     auto* closeButton = new QPushButton("Close", &dialog);

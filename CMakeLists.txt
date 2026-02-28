@@ -35,13 +35,27 @@ set(HEADERS
         MainWindow.hpp
 )
 
-add_executable(Final_Project ${SOURCES} ${HEADERS})
+add_executable(Final_Project
+        ${SOURCES}
+        ${HEADERS}
+        resources.qrc
+)
 
 target_link_libraries(Final_Project Qt6::Widgets)
 
+if(WIN32)
+    set_target_properties(Final_Project PROPERTIES
+            WIN32_EXECUTABLE TRUE
+    )
+endif()
+
+# Copy Qt DLLs
 add_custom_command(TARGET Final_Project POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "C:/Qt/6.10.2/mingw_64/bin"
         $<TARGET_FILE_DIR:Final_Project>
-        COMMENT "Copying Qt DLLs to output directory"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "C:/Qt/6.10.2/mingw_64/plugins/platforms"
+        $<TARGET_FILE_DIR:Final_Project>/platforms
+        COMMENT "Copying Qt DLLs and plugins to output directory"
 )
