@@ -1,0 +1,86 @@
+BEGIN PROGRAM
+    CREATE Library
+    TRY loadData() from text files
+    CATCH error → DISPLAY error, continue with empty library
+
+    CREATE MainWindow
+    DISPLAY window
+
+    MAIN PROGRAM LOOP:
+        IF "Search" button clicked:
+            GET term and search type
+            IF term empty → refreshBookTable()
+            ELSE:
+                CLEAR table
+                GET results based on type
+                FOR EACH book in results:
+                    ADD row to table (Title, Author, Genre, Type, Status)
+                SHOW count
+
+        IF "Lookup Patron" button clicked:
+            GET input
+            IF empty → show error
+            ELSE:
+                TRY as ID → findPatron(id)
+                ELSE → findPatron by name
+                IF found → displayPatronInfo(patron)
+                ELSE → show "Not found"
+
+        IF "Checkout" button clicked:
+            GET patronId and bookTitle
+            IF empty → show error
+            ELSE:
+                TRY library.checkoutBook(patronId, bookTitle)
+                    refreshBookTable()
+                    clear fields
+                    show success
+                CATCH error → show error
+
+        IF "Return" button clicked:
+            GET patronId and bookTitle
+            IF empty → show error
+            ELSE:
+                TRY library.returnBook(patronId, bookTitle)
+                    refreshBookTable()
+                    clear fields
+                    show success
+                CATCH error → show error
+
+        IF "View Transactions" button clicked:
+            GET transactions
+            IF empty → show "No transactions"
+            ELSE:
+                CREATE dialog with table
+                FOR EACH transaction:
+                    ADD row with date, patronId, type, title, status
+                    IF checkout and book still out → show "Active" + due/overdue
+                    ELSE IF checkout → "Returned"
+                    ELSE → "Completed"
+                SHOW dialog
+
+        IF "Add Patron" button clicked:
+            GET name from input dialog
+            IF name entered:
+                TRY library.addPatron(Patron(name))
+                    show success
+                CATCH error → show error
+
+        IF "Add Book" button clicked:
+            SHOW custom dialog for book details
+            GET title, author, genre, type, extra data
+            IF validation passes:
+                TRY create book object (EBook/PrintedBook)
+                    library.addBook(book)
+                    refreshBookTable()
+                    show success
+                CATCH error → show error
+
+        IF "Save Data" menu clicked:
+            TRY library.saveData()
+                show success
+            CATCH error → show error
+
+        IF "Exit" menu clicked OR window closed:
+            library.saveData()
+            END program
+END

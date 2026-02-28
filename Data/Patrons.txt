@@ -1,13 +1,2 @@
-1|John Smith
-2|Emily Johnson
-3|Michael Williams
-4|Sarah Brown
-5|James Jones
-6|Jessica Garcia
-7|David Miller
-8|Ashley Davis
-9|Christopher Rodriguez
-10|Amanda Wilson
-11|Lythoniel Coryell
-12|Stella Song
-13|Jacqueline Adams
+1|Stella Song
+2|Jacqueline Adams

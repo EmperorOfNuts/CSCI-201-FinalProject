@@ -1,6 +1,6 @@
 Fiction|The Great Gatsby|F. Scott Fitzgerald|PrintedBook|180|Available|null|null|null
 Science|A Brief History of Time|Stephen Hawking|PrintedBook|256|Available|null|null|null
-Non-Fiction|The Hobbit|J.R.R. Tolkien|PrintedBook|310|Available|null|null|null
+Non-Fiction|The Hobbit|J.R.R. Tolkien|PrintedBook|310|Available|27/02/2026|29/03/2026|null
 Fiction|1984|George Orwell|PrintedBook|328|Available|null|null|null
 Science|The Selfish Gene|Richard Dawkins|PrintedBook|352|Available|null|null|null
 Mystery|The Hound of the Baskervilles|Arthur Conan Doyle|PrintedBook|256|Available|null|null|null
@@ -32,7 +32,7 @@ Mystery|Career of Evil|Robert Galbraith|PrintedBook|512|Available|null|null|null
 Mystery|Lethal White|Robert Galbraith|PrintedBook|656|Available|null|null|null
 Mystery|Troubled Blood|Robert Galbraith|PrintedBook|944|Available|null|null|null
 Fiction|The Shining|Stephen King|PrintedBook|688|Available|null|null|null
-Fiction|It|Stephen King|PrintedBook|1138|CheckedOut|27/02/2025|29/03/2025|12
+Fiction|It|Stephen King|PrintedBook|1138|Available|null|null|null
 Fiction|The Stand|Stephen King|PrintedBook|1152|Available|null|null|null
 Fiction|Carrie|Stephen King|PrintedBook|304|Available|null|null|null
 Fiction|The Dark Half|Stephen King|PrintedBook|480|Available|null|null|null
