@@ -40,11 +40,7 @@ int Book::getDaysOverdue() const {
 
 void Book::displayInfo() const {
     std::cout << "Unknown Type " << getTitle() << " - " << getAuthor() << ", "
-              << genreToString(getGenre()) << " [" << bookStatusToString(getStatus());
-    if (isOverdue()) {
-        std::cout << " - OVERDUE!";
-    }
-    std::cout << "]" << std::endl;
+              << genreToString(getGenre()) << " [" << bookStatusToString(getStatus()) << "]" << std::endl;
 }
 
 std::string Book::genreToString(const Genre g) {

@@ -701,4 +701,3 @@ void MainWindow::onAddBookClicked()
         }
     }
 }
-
